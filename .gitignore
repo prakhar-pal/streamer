@@ -56,3 +56,9 @@ typings/
 
 # dotenv environment variables file
 .env
+
+.server?*
+app.js 
+*.js~
+see-headers.js
+
