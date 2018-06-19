@@ -29,8 +29,8 @@ var PORT = argv[3]?argv[3]:3000;
 var app = express();
 app.use(cors());
 app.use(function(req,res,next){
-    url = req.url;
-    console.log('requested url: '+url);
+    //url = req.url;
+    //console.log('requested url: '+url);
     // if(url.search('.flv')!=-1){
     //     res.contentType('video/x-flv');
     // }

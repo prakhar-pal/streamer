@@ -104,7 +104,7 @@ module.exports = {
                     case '.gif':
                     case '.ogg':
                     case '.mkv':
-                        callback(null,{url:'/'+file,extension:extension});  //found the file, sending the url
+                        callback(null,{url:file,extension:extension});  //found the file, sending the url
                         break;
                     default:
                         callback(new Error('The video format '+extension+" for file \""+file+"\" isn't supported"),null);
