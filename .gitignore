@@ -61,4 +61,5 @@ typings/
 app.js 
 *.js~
 see-headers.js
-
+# trash files
+.trash/

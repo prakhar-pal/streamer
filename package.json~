@@ -1,7 +1,6 @@
 {
-  "author":"prakharlap@gmail.com",
   "name": "streamer",
-  "version": "0.0.2",
+  "version": "0.0.1",
   "private": true,
   "scripts": {
     "start": "node server.js"
