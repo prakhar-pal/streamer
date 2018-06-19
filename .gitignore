@@ -63,3 +63,5 @@ app.js
 see-headers.js
 # trash files
 trash/
+public/*.flv
+public/*.mkv
