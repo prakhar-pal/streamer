@@ -65,3 +65,5 @@ see-headers.js
 trash/
 public/*.flv
 public/*.mkv
+angular_ui/
+.trash/
