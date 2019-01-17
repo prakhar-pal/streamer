@@ -58,7 +58,7 @@ app.get('/get/:file',function(req,res){
     else{
         if(fs.statSync(f).isFile()){
             var extension = path.extname(f);
-            if(constants.includes(extension)) {
+            if(constants.ACCEPTABLE_MEDIA_EXTENSIONS.includes(extension)) {
                 res.redirect('/'+file);
             }else{
                 res.status(404).send('The video format '+extension+" for file \""+file+"\" isn't supported");
