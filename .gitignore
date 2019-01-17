@@ -67,3 +67,4 @@ public/*.flv
 public/*.mkv
 angular_ui/
 .trash/
+.vscode/
