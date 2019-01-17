@@ -1,18 +1,21 @@
 const path = require('path');
 const fs = require('fs');
 const walk = require('walk');
-var {encrypt,decrypt} = require('./encryption.js');
-var filePath = require('../config.js');
+const {encrypt,decrypt} = require('./encryption.js');
+const filePath = require('../config.js');
+const constants = require('../constants');
+const utils = require('./utils/utils');
+
 module.exports = {
 	getFileLists:function(currentDir,callback){
-        console.log('checking existence for '+currentDir+' directory');
+        utils.ifShowLogs() && console.log('checking existence for '+currentDir+' directory');
         if(!currentDir)
         {
             callback(new Error('Got a null/malformed directory'),null);
             return;
         }
         var dir = decrypt(currentDir);
-        if(!dir || dir==null)
+        if(!dir)
         {
            callback(new Error('Error while decrypting the file name'),null);
            return ;
@@ -25,46 +28,23 @@ module.exports = {
            {
                 var files = [];//getFiles(filePath.path);
                 var directories =  [];//getDirs(filePath.path);
-                var filesEncoded = [];
-                var directoriesEncoded = [];
                 var contains = fs.readdirSync(d);
                 contains.forEach((file)=>{
                     var fullPath = path.join(filePath.path,dir,file);
                     var stat = fs.statSync(fullPath);
 
                     //only send files that are playable in the browser. choose files using their extensions(.mp4,.webm etc)
-                    var extension = path.extname(fullPath)
-                    if(stat.isFile())
-                    {    
-                        switch(extension)
-                        {
-                           case '.mp4':
-                           case '.webm':
-                           case '.png':
-                           case '.jpg':
-                           case '.jpeg':
-                           case '.bmp':
-                           case '.gif':
-                           case '.ogg':
-                           case '.mkv':
+                    var extension = path.extname(fullPath);
+                    utils.ifShowLogs() && console.log(`current file extension is ${extension}, and media are ${constants.ACCEPTABLE_MEDIA_EXTENSIONS}`);
+                    if(stat.isFile() && constants.ACCEPTABLE_MEDIA_EXTENSIONS.indexOf(extension) > -1 )
                            files.push({name:file,nameEncoded:encrypt(path.join(dir,file)),file:true});
-                           //filesEncoded.push();
-                           break;
-                           default: break;
-                       }
-                   }
-                   else
-                   {
-                      //directoriesEncoded.push(encrypt(path.join(dir,file)));
-                      directories.push({name:file,nameEncoded:encrypt(path.join(dir,file)),file:false});
-                  }
+                    else if(stat.isDirectory())
+                           directories.push({name:file,nameEncoded:encrypt(path.join(dir,file)),file:false});
               });
                 var data = {
                     title:'File listing',
                     files:files,
-                    directories:directories,
-                    filesEncoded:filesEncoded,
-                    dirsEncoded:directoriesEncoded
+                    directories:directories
                 };
                 callback(null,data);
             }
@@ -90,38 +70,21 @@ module.exports = {
         }
         else
         {
-            if(fs.statSync(f).isFile())
-            {
+            if(fs.statSync(f).isFile()){
                 var extension = path.extname(f);  //gets the extension of the file name
-                switch(extension) 
-                {
-                    case '.mp4':
-                    case '.webm':
-                    case '.png':
-                    case '.jpg':
-                    case '.jpeg':
-                    case '.bmp':
-                    case '.gif':
-                    case '.ogg':
-                    case '.mkv':
+                if (constants.ACCEPTABLE_MEDIA_EXTENSIONS.includes(extension))
                         callback(null,{url:file,extension:extension});  //found the file, sending the url
-                        break;
-                    default:
+                else
                         callback(new Error('The video format '+extension+" for file \""+file+"\" isn't supported"),null);
-                }
-
             }
             else if(fs.stat(f).isDirectory())
             {
                 var dir = decrypt(req.params.file);
-                console.log('you accessed '+dir);
+                utils.ifShowLogs() && console.log('you accessed '+dir);
                 callback(new Error('You are trying to access a directory.'),null);
             }
             else
-            {
                 callback(new Error('Some error occured.'),null);
-            }
-
         }
     },
     searchFiles:function(pattern,callback){
@@ -144,25 +107,14 @@ module.exports = {
                 var extension = path.extname(file);
                 var fileName = file.replace(basePath,'');
                 if(fileName.indexOf(pattern)!=-1){
-                    switch(extension) 
-                    {
-                        case '.mp4':
-                        case '.webm':
-                        case '.png':
-                        case '.jpg':
-                        case '.jpeg':
-                        case '.bmp':
-                        case '.gif':
-                        case '.ogg':
-                        case '.mkv':
-                            var words = fileName.split('/');
-                            var name = words[words.length-1];
-                            outFiles.push({
-                                name:name,
-                                nameEncoded:encrypt(fileName),
-                                file:true
-                            });
-                            break;
+                    if(constants.ACCEPTABLE_MEDIA_EXTENSIONS.includes(extension)) {
+                        var words = fileName.split('/');
+                        var name = words[words.length-1];
+                        outFiles.push({
+                            name:name,
+                            nameEncoded:encrypt(fileName),
+                            file:true
+                        });
                     }
                 }
                 
