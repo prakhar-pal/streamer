@@ -6,6 +6,7 @@ const constants = require('./constants');
 const fs = require('fs');
 const cors = require('cors');
 var {argv} = require('process');
+const  { encrypt, decrypt} = require('./api/encryption.js');
 require('jade');
 require('amdefine');
 
